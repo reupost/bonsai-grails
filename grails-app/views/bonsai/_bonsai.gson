@@ -1,0 +1,15 @@
+ import bonsaiapp.Bonsai
+
+ model {
+   Bonsai bonsai
+ }
+
+ json {
+   id bonsai.id
+   name bonsai.name
+   tag bonsai.tag
+   taxon id: bonsai.taxon.id,
+       fullName: bonsai.taxon.fullName,
+       commonName: bonsai.taxon.commonName,
+       test: "test"
+ }
