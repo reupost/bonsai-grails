@@ -9,7 +9,7 @@ import org.hibernate.SessionFactory
 @Rollback
 class BonsaiServiceSpec extends Specification {
 
-    BonsaiService bonsaiService
+    IBonsaiService bonsaiService
     SessionFactory sessionFactory
 
     private Long setupData() {

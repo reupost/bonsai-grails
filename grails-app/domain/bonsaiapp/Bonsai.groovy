@@ -1,15 +1,18 @@
 package bonsaiapp
 
 import grails.rest.Resource
+import bonsaiapp.EntityPics
+import groovy.transform.CompileStatic
 
 //@Resource(uri = '/api/bonsai')
-class Bonsai extends EntityWithPic {
-
-    static belongsTo = [taxon:Taxon]
-    static hasMany = [diaryEntries: DiaryEntry]
+//@CompileStatic
+class Bonsai {
 
     String name
     String tag
+
+    static belongsTo = [taxon:Taxon]
+    static hasMany = [diaryEntries: DiaryEntry]
 
     static constraints = {
         name nullable: true

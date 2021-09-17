@@ -3,7 +3,7 @@ package bonsaiapp
 import grails.rest.Resource
 
 //@Resource(uri = '/api/taxon')
-class Taxon extends EntityWithPic {
+class Taxon {
 
     String family
     String genus

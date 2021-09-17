@@ -17,7 +17,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the index action returns the correct model"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * list(_) >> []
             1 * count() >> 0
         }
@@ -51,7 +51,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the save action correctly persists"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * save(_ as Bonsai)
         }
 
@@ -72,7 +72,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the save action with an invalid instance"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * save(_ as Bonsai) >> { Bonsai bonsai ->
                 throw new ValidationException("Invalid instance", bonsai.errors)
             }
@@ -91,7 +91,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the show action with a null id"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * get(null) >> null
         }
 
@@ -104,7 +104,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the show action with a valid id"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * get(2) >> new Bonsai()
         }
 
@@ -117,7 +117,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the edit action with a null id"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * get(null) >> null
         }
 
@@ -130,7 +130,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the edit action with a valid id"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * get(2) >> new Bonsai()
         }
 
@@ -155,7 +155,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the update action correctly persists"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * save(_ as Bonsai)
         }
 
@@ -176,7 +176,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the update action with an invalid instance"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * save(_ as Bonsai) >> { Bonsai bonsai ->
                 throw new ValidationException("Invalid instance", bonsai.errors)
             }
@@ -205,7 +205,7 @@ class BonsaiControllerSpec extends Specification implements ControllerUnitTest<B
 
     void "Test the delete action with an instance"() {
         given:
-        controller.bonsaiService = Mock(BonsaiService) {
+        controller.bonsaiService = Mock(IBonsaiService) {
             1 * delete(2)
         }
 

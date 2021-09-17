@@ -1,14 +1,15 @@
 package bonsaiapp
 
 import grails.rest.Resource
+import bonsaiapp.EntityPics
 
 //@Resource(uri = '/api/diary')
-class DiaryEntry extends EntityWithPic {
-
-    static belongsTo = [bonsai:Bonsai]
+class DiaryEntry {
 
     Date date
     String notes
+
+    static belongsTo = [bonsai:Bonsai]
 
     static constraints = {
     }

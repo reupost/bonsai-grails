@@ -5,7 +5,7 @@ import static org.springframework.http.HttpStatus.*
 
 class BonsaiController {
 
-    BonsaiService bonsaiService
+    IBonsaiService bonsaiService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

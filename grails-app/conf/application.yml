@@ -91,6 +91,11 @@ management:
         jmx:
             unique-names: true
 
+micronaut:
+    codec:
+        json:
+            additionalTypes:
+                - text/javascript
 ---
 hibernate:
     cache:
@@ -139,3 +144,5 @@ environments:
                 testOnReturn: false
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+bonsaiws:
+    baseurl: http://localhost:8081

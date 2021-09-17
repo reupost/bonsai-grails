@@ -1,18 +1,58 @@
 package bonsaiapp
 
-import grails.gorm.services.Service
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
+import com.fasterxml.jackson.annotation.PropertyAccessor
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.client.BlockingHttpClient
+import io.micronaut.http.client.HttpClient
 
-@Service(Bonsai)
-interface BonsaiService {
+import javax.naming.directory.SearchResult
 
-    Bonsai get(Serializable id)
+public class BonsaiService implements IBonsaiService {
 
-    List<Bonsai> list(Map args)
+    def grailsApplication
 
-    Long count()
 
-    void delete(Serializable id)
+    @Override
+    public Bonsai get(Serializable id) {
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
 
-    Bonsai save(Bonsai bonsai)
+        BlockingHttpClient client = HttpClient.create(queryUrl.toURL()).toBlocking()
 
+        HttpRequest request = HttpRequest.GET("/bonsai/bonsai/${id}")
+        HttpResponse<String> resp = client.exchange(request, String)
+        client.close()
+
+        String json = resp.body()
+        ObjectMapper objectMapper = new ObjectMapper()
+        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        Bonsai searchResult = objectMapper.readValue(json, Bonsai)
+        searchResult
+    }
+
+    @Override
+    public List<Bonsai> list(Map args) {
+        return null;
+    }
+
+    @Override
+    public Long count() {
+        return null;
+    }
+
+    @Override
+    public void delete(Serializable id) {
+
+    }
+
+    @Override
+    public Bonsai save(Bonsai bonsai) {
+        return null;
+    }
 }

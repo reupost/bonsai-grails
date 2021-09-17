@@ -1,12 +1,16 @@
 package bonsaiapp
 
 import grails.rest.Resource
+import bonsaiapp.EntityPics
 
 //@Resource(uri = '/api/pic')
 class Pic {
 
-    static belongsTo = [entityWithPic:EntityWithPic]
     String filePath
+    String title
+    Date dateTaken
+
+    static belongsTo = [entityPics:EntityPics]
 
     static constraints = {
     }
