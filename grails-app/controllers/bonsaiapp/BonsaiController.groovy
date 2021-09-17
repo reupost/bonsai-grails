@@ -11,14 +11,17 @@ class BonsaiController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        respond bonsaiService.list(params), model:[bonsaiCount: bonsaiService.count()]
+
+        ResultPage resultPage = bonsaiService.pageList(params)
+
+        respond resultPage.results, model: resultPage.pageModel
     }
 
     def show(Long id) {
         respond bonsaiService.get(id)
     }
 
-    def create() {
+    def create()     {
         respond new Bonsai(params)
     }
 
