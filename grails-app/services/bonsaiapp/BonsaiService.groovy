@@ -61,8 +61,9 @@ public class BonsaiService implements IBonsaiService {
         def filter = ""
         def page = Math.floor(offset/size).toInteger()
 
-        def sort = "tag"
-        def dir = "asc"
+        def sort = args['sort']
+        if (sort == 'taxon') sort = 'taxon.fullName' //do not sort by taxon id
+        def dir = args['order']
 
         HttpRequest request = HttpRequest.GET("/bonsai/bonsais_page?filter=${filter}&page=${page}&sort=${sort}&dir=${dir}")
         HttpResponse<String> resp = client.exchange(request, String)
