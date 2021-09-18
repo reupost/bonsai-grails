@@ -14,7 +14,22 @@
             </ul>
         </div>
         <div id="list-bonsai" class="content scaffold-list" role="main">
-            <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+            <div style="clear:both;display:block">
+              <span style="float:left">
+              <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+              </span>
+              <span style="float:right;margin-right:10px">
+              <form action="">
+              <input type="hidden" id="offset" name="offset" value="${params.offset}"/>
+              <input type="hidden" id="max" name="max" value="${params.max}"/>
+              <input type="hidden" id="sort" name="sort" value="${params.sort}"/>
+              <input type="hidden" id="order" name="order" value="${params.order}"/>
+              Search: <input type="text" id="searchFilter" name="searchFilter" width="20"/>
+              <input type="submit" value="Go"/>
+              <input type="reset" value="Clear"/>
+              </form>
+              </span>
+            </div>
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>
