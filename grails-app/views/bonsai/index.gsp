@@ -24,9 +24,9 @@
               <input type="hidden" id="max" name="max" value="${params.max}"/>
               <input type="hidden" id="sort" name="sort" value="${params.sort}"/>
               <input type="hidden" id="order" name="order" value="${params.order}"/>
-              Search: <input type="text" id="searchFilter" name="searchFilter" width="20"/>
+              Search: <input type="text" id="searchFilter" name="searchFilter" width="20" value="${params.searchFilter}"/>
               <input type="submit" value="Go"/>
-              <input type="reset" value="Clear"/>
+              <input type="button" value="Clear" onclick="javascript:document.getElementById('searchFilter').value='';form.submit()"/>
               </form>
               </span>
             </div>

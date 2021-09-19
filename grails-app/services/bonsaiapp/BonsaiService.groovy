@@ -14,8 +14,6 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 
-import javax.naming.directory.SearchResult
-
 public class BonsaiService implements IBonsaiService {
 
     def grailsApplication
@@ -50,6 +48,7 @@ public class BonsaiService implements IBonsaiService {
     public ResultPage pageList(Map args) {
 
         ResultPage resultPage = new ResultPage()
+        InputCleaner inputCleaner = new InputCleaner()
 
         def queryUrl = grailsApplication.config.bonsaiws.baseurl
 
@@ -58,7 +57,8 @@ public class BonsaiService implements IBonsaiService {
         Integer offset = (args['offset'] ?: 0) as Integer
         Integer size = (args['max'] ?: 10) as Integer
 
-        def filter = (args['searchFilter'] ?: "").replaceAll("[^a-zA-Z0-9]", "") //TODO unicode
+        def filter = inputCleaner.getOnlyLettersAndNumbers((args['searchFilter'] ?: "").toString())
+        filter = URLEncoder.encode(filter, "UTF-8")
         def page = Math.floor(offset/size).toInteger()
 
         def sort = args['sort']
