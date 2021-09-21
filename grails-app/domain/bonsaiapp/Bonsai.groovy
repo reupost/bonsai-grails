@@ -1,8 +1,5 @@
 package bonsaiapp
 
-import grails.rest.Resource
-import bonsaiapp.EntityPics
-import groovy.transform.CompileStatic
 
 //@Resource(uri = '/api/bonsai')
 //@CompileStatic

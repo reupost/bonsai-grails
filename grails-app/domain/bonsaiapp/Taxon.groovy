@@ -1,6 +1,5 @@
 package bonsaiapp
 
-import grails.rest.Resource
 
 //@Resource(uri = '/api/taxon')
 class Taxon {

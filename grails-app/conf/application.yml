@@ -145,4 +145,4 @@ environments:
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
 bonsaiws:
-    baseurl: http://localhost:8081
+    baseurl: http://localhost:8081/

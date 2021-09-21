@@ -1,6 +1,8 @@
 package bonsaiapp
 
 import grails.validation.ValidationException
+import javassist.NotFoundException
+
 import static org.springframework.http.HttpStatus.*
 
 class BonsaiController {
@@ -79,11 +81,20 @@ class BonsaiController {
             return
         }
 
-        bonsaiService.delete(id)
+        def isDeleted = true
+        try {
+            bonsaiService.delete(id)
+        } catch (NotFoundException e) {
+            isDeleted = false
+        }
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'bonsai.label', default: 'Bonsai'), id])
+                if (isDeleted) {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'bonsai.label', default: 'Bonsai'), id])
+                } else {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'bonsai.label', default: 'Bonsai'), id])
+                }
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }
