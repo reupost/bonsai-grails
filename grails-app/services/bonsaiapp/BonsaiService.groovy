@@ -1,11 +1,6 @@
 package bonsaiapp
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility
-import com.fasterxml.jackson.annotation.PropertyAccessor
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonBuilder
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper
@@ -16,43 +11,37 @@ import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 import javassist.NotFoundException
 
-public class BonsaiService implements IBonsaiService {
+class BonsaiService implements IBonsaiService {
 
     def grailsApplication
 
     @Override
-    public Bonsai get(Serializable id) {
+    Bonsai get(Serializable id) {
         def queryUrl = grailsApplication.config.bonsaiws.baseurl
 
-        BlockingHttpClient client = HttpClient.create(queryUrl.toURL()).toBlocking()
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
         HttpRequest request = HttpRequest.GET("bonsai/${id}")
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
-        String json = resp.body()
-        ObjectMapper objectMapper = new ObjectMapper()
-        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-        objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        Bonsai searchResult = objectMapper.readValue(json, Bonsai)
-        searchResult
+        JsonToObject.fromJson(resp.body(), new TypeReference<Bonsai>(){})
     }
 
     @Override
-    public List<Bonsai> list(Map args) {
+    List<Bonsai> list(Map args) {
         ResultPage resultPage = pageList(args)
         resultPage.results
     }
 
-    public ResultPage pageList(Map args) {
+    ResultPage pageList(Map args) {
 
         ResultPage resultPage = new ResultPage()
         InputCleaner inputCleaner = new InputCleaner()
 
         def queryUrl = grailsApplication.config.bonsaiws.baseurl
 
-        BlockingHttpClient client = HttpClient.create(queryUrl.toURL()).toBlocking()
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
         Integer offset = (args['offset'] ?: 0) as Integer
         Integer size = (args['max'] ?: 10) as Integer
@@ -75,12 +64,7 @@ public class BonsaiService implements IBonsaiService {
         def jsonResp = parser.parseText(json)
         def jsonBonsaiList = new JsonBuilder(jsonResp.content).toPrettyString()
 
-        ObjectMapper objectMapper = new ObjectMapper()
-        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-        objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
-        List<Bonsai> bonsaiList = objectMapper.readValue(jsonBonsaiList, new TypeReference<List<Bonsai>>(){})
+        List<Bonsai> bonsaiList = JsonToObject.fromJson(jsonBonsaiList, new TypeReference<List<Bonsai>>(){})
 
         resultPage.results = bonsaiList
         resultPage.pageModel = [bonsaiCount: jsonResp.totalElements]
@@ -88,10 +72,10 @@ public class BonsaiService implements IBonsaiService {
     }
 
     @Override
-    public Long count() {
+    Long count() {
         def queryUrl = grailsApplication.config.bonsaiws.baseurl
 
-        BlockingHttpClient client = HttpClient.create(queryUrl.toURL()).toBlocking()
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
         HttpRequest request = HttpRequest.GET("bonsai/count")
         HttpResponse<String> resp = client.exchange(request, String)
@@ -104,7 +88,7 @@ public class BonsaiService implements IBonsaiService {
     void delete(Serializable id) {
         def queryUrl = grailsApplication.config.bonsaiws.baseurl
 
-        BlockingHttpClient client = HttpClient.create(queryUrl.toURL()).toBlocking()
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
         HttpRequest request = HttpRequest.DELETE("bonsai/${id}")
         HttpResponse<String> resp = client.exchange(request, String)
@@ -117,10 +101,10 @@ public class BonsaiService implements IBonsaiService {
     }
 
     @Override
-    public Bonsai save(Bonsai bonsai) {
+    Bonsai save(Bonsai bonsai) {
         def queryUrl = grailsApplication.config.bonsaiws.baseurl
 
-        BlockingHttpClient client = HttpClient.create(queryUrl.toURL()).toBlocking()
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
         BonsaiDTO bonsaiDTO = new BonsaiDTO()
         Copy.copy(bonsai, bonsaiDTO)
@@ -132,13 +116,7 @@ public class BonsaiService implements IBonsaiService {
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
-            String json = resp.body()
-            ObjectMapper objectMapper = new ObjectMapper()
-            objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-            objectMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            Bonsai res = objectMapper.readValue(json, Bonsai)
-            res
+            JsonToObject.fromJson(resp.body(), new TypeReference<Bonsai>(){})
         } else {
             null
         }
