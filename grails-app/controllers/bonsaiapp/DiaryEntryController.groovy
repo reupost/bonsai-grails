@@ -5,7 +5,7 @@ import static org.springframework.http.HttpStatus.*
 
 class DiaryEntryController {
 
-    DiaryEntryService diaryEntryService
+    IDiaryEntryService diaryEntryService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

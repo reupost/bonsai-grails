@@ -2,6 +2,7 @@ package bonsaiapp
 
 class TaxonDTO {
 
+    Long id
     String family
     String genus
     String species
@@ -16,7 +17,7 @@ class TaxonDTO {
     }
 
     String toString() {
-        (fullName? fullName :
+        id + ': ' + (fullName? fullName :
                 genus + ' ' + species + (cultivar? " '" + cultivar + "'": '') + (commonName? ' (' + commonName + ')' : '')
         )
     }

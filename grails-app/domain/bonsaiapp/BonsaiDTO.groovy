@@ -6,7 +6,7 @@ class BonsaiDTO {
     Long id
     String name
     String tag
-    Integer taxonId
+    Long taxonId
 
     String toString() {
         'DTO: ' + id + ' - [' + tag + '] ' + name + ' (' + taxonId + ')'

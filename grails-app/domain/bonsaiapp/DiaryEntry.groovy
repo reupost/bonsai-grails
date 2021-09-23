@@ -6,8 +6,8 @@ import bonsaiapp.EntityPics
 //@Resource(uri = '/api/diary')
 class DiaryEntry {
 
-    Date date
-    String notes
+    Date entryDate
+    String entryText
 
     static belongsTo = [bonsai:Bonsai]
 
@@ -18,6 +18,6 @@ class DiaryEntry {
     }
 
     String toString() {
-        date + ': ' + notes
+        entryDate.toString() + ': ' + entryText
     }
 }
