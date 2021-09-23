@@ -25,7 +25,8 @@ class DiaryEntryService implements IDiaryEntryService {
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
-        JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntry>(){})
+        DiaryEntry x = JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntry>(){})
+        x
     }
 
     @Override
