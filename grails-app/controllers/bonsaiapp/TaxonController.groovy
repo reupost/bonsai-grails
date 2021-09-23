@@ -1,11 +1,12 @@
 package bonsaiapp
 
 import grails.validation.ValidationException
+import javassist.NotFoundException
 import static org.springframework.http.HttpStatus.*
 
 class TaxonController {
 
-    TaxonService taxonService
+    ITaxonService taxonService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
