@@ -54,18 +54,16 @@ class BonsaiController {
         render(view: 'edit', model:[bonsai: bonsaiService.get(id), taxonService: taxonService])
     }
 
-    def update(Bonsai bonsai) {
-        if (bonsai == null) {
-            bonsai = new Bonsai() //TODO: why are the params not being cast appropriately???
-            bonsai.setProperty("tag", params.tag)
-            bonsai.setProperty("name", params.name)
-            bonsai.setProperty("taxon", taxonService.get(params.taxon)) //params.taxon = taxon id
-            bonsai.setProperty("id", Long.valueOf(params.id))
-        }
+    def update(Long id) {
+        Bonsai bonsai = bonsaiService.get(id)
+
         if (bonsai == null) {
             notFound()
             return
         }
+
+        bonsai.properties = params
+        bonsai.setProperty("taxon", taxonService.get(params.taxon)) //params.taxon = taxon id
 
         try {
             bonsaiService.save(bonsai)
