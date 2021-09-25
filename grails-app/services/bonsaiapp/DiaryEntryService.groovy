@@ -54,7 +54,7 @@ class DiaryEntryService implements IDiaryEntryService {
         if (sort == 'bonsai') sort = 'bonsai.name' //do not sort by bonsai id
         def dir = args['order'] ?: 'DESC'
 
-        HttpRequest request = HttpRequest.GET("diaryEntry/page?filter=${filter}&page=${page}&sort=${sort}&dir=${dir}")
+        HttpRequest request = HttpRequest.GET("diaryEntry/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 

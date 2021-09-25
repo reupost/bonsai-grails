@@ -55,7 +55,7 @@ class BonsaiService implements IBonsaiService {
         if (sort == 'taxon') sort = 'taxon.fullName' //do not sort by taxon id
         def dir = args['order'] ?: 'ASC'
 
-        HttpRequest request = HttpRequest.GET("bonsai/page?filter=${filter}&page=${page}&sort=${sort}&dir=${dir}")
+        HttpRequest request = HttpRequest.GET("bonsai/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 

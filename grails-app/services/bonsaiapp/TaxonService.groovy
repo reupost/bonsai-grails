@@ -35,6 +35,14 @@ class TaxonService implements ITaxonService {
         resultPage.results
     }
 
+    @Override
+    List<Taxon> listAll(Map args) {
+        args['offset'] = 0
+        args['max'] = 9999;
+        ResultPage resultPage = pageList(args)
+        resultPage.results
+    }
+
     ResultPage pageList(Map args) {
 
         ResultPage resultPage = new ResultPage()
@@ -55,12 +63,12 @@ class TaxonService implements ITaxonService {
         //if (sort == 'taxon') sort = 'taxon.fullName' //do not sort by taxon id
         def dir = args['order'] ?: 'ASC'
 
-        HttpRequest request = HttpRequest.GET("taxon/page?filter=${filter}&page=${page}&sort=${sort}&dir=${dir}")
+        HttpRequest request = HttpRequest.GET("taxon/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
         String json = resp.body()
-        //this is bit of a hacky way of getting around the REST service returning 'content:[array]' instead of just 'array'
+        //this is bit of a hacky way of getting around the REST service returning 'content:[array],pageable,etc' instead of just 'array'
         def parser = new JsonSlurper().setType(JsonParserType.LAX)
         def jsonResp = parser.parseText(json)
         def jsonTaxonList = new JsonBuilder(jsonResp.content).toPrettyString()
