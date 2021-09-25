@@ -51,10 +51,7 @@ class BonsaiController {
     }
 
     def edit(Long id) {
-        //TaxonService taxonService = new TaxonService();
-        List<Taxon> taxonList = taxonService.list([filter:'']);
-        log.info(taxonList.toString());
-        render(view: 'edit', model:[bonsai: bonsaiService.get(id), taxonService: taxonService, test: 'hello', taxonList: taxonList])
+        render(view: 'edit', model:[bonsai: bonsaiService.get(id), taxonService: taxonService])
     }
 
     def update(Bonsai bonsai) {
