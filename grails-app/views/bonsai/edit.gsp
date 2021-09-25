@@ -26,10 +26,17 @@
                 </g:eachError>
             </ul>
             </g:hasErrors>
+            <div class="message">${params}</div>
+            <div class="message">${test?:'no test passed'}</div>
+            <div class="message">${taxonService}</div>
             <g:form resource="${this.bonsai}" method="PUT">
                 <g:hiddenField name="version" value="${this.bonsai?.version}" />
                 <fieldset class="form">
-                    <f:all bean="bonsai"/>
+                    <f:field bean="bonsai" property="id"/>
+                    <f:field bean="bonsai" property="tag"/>
+                    <f:field bean="bonsai" property="name"/>
+                    <f:field bean="bonsai" property="taxon" taxonService="${taxonService}" taxonList="${taxonList}" />
+                    <f:field bean="bonsai" property="diaryEntries"/>
                 </fieldset>
                 <fieldset class="buttons">
                     <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />

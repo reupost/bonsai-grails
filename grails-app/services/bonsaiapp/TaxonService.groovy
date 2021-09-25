@@ -1,10 +1,6 @@
 package bonsaiapp
 
-import bonsaiapp.ITaxonService
-import bonsaiapp.InputCleaner
-import bonsaiapp.ResultPage
-import bonsaiapp.Taxon
-import bonsaiapp.TaxonDTO
+
 import com.fasterxml.jackson.core.type.TypeReference
 import groovy.json.JsonBuilder
 import groovy.json.JsonParserType
@@ -55,9 +51,9 @@ class TaxonService implements ITaxonService {
         filter = URLEncoder.encode(filter, "UTF-8")
         def page = Math.floor(offset/size).toInteger()
 
-        def sort = args['sort']
+        def sort = args['sort'] ?: 'fullName'
         //if (sort == 'taxon') sort = 'taxon.fullName' //do not sort by taxon id
-        def dir = args['order']
+        def dir = args['order'] ?: 'ASC'
 
         HttpRequest request = HttpRequest.GET("taxon/page?filter=${filter}&page=${page}&sort=${sort}&dir=${dir}")
         HttpResponse<String> resp = client.exchange(request, String)

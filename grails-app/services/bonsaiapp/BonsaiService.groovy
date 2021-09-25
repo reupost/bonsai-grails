@@ -25,7 +25,8 @@ class BonsaiService implements IBonsaiService {
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
-        JsonToObject.fromJson(resp.body(), new TypeReference<Bonsai>(){})
+        Bonsai x = JsonToObject.fromJson(resp.body(), new TypeReference<Bonsai>(){})
+        x
     }
 
     @Override
@@ -50,9 +51,9 @@ class BonsaiService implements IBonsaiService {
         filter = URLEncoder.encode(filter, "UTF-8")
         def page = Math.floor(offset/size).toInteger()
 
-        def sort = args['sort']
+        def sort = args['sort'] ?: 'tag'
         if (sort == 'taxon') sort = 'taxon.fullName' //do not sort by taxon id
-        def dir = args['order']
+        def dir = args['order'] ?: 'ASC'
 
         HttpRequest request = HttpRequest.GET("bonsai/page?filter=${filter}&page=${page}&sort=${sort}&dir=${dir}")
         HttpResponse<String> resp = client.exchange(request, String)

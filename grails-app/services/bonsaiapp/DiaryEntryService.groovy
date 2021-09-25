@@ -25,8 +25,7 @@ class DiaryEntryService implements IDiaryEntryService {
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
-        DiaryEntry x = JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntry>(){})
-        x
+        JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntry>(){})
     }
 
     @Override
@@ -51,9 +50,9 @@ class DiaryEntryService implements IDiaryEntryService {
         filter = URLEncoder.encode(filter, "UTF-8")
         def page = Math.floor(offset/size).toInteger()
 
-        def sort = args['sort']
+        def sort = args['sort'] ?: 'entryDate'
         if (sort == 'bonsai') sort = 'bonsai.name' //do not sort by bonsai id
-        def dir = args['order']
+        def dir = args['order'] ?: 'DESC'
 
         HttpRequest request = HttpRequest.GET("diaryEntry/page?filter=${filter}&page=${page}&sort=${sort}&dir=${dir}")
         HttpResponse<String> resp = client.exchange(request, String)

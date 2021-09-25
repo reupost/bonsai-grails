@@ -86,6 +86,9 @@ grails:
                 scriptlet: html
                 taglib: none
                 staticparts: none
+    plugin:
+        fields:
+            disableLookupCache: true
 management:
     endpoints:
         jmx:

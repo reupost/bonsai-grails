@@ -8,6 +8,7 @@ import static org.springframework.http.HttpStatus.*
 class BonsaiController {
 
     IBonsaiService bonsaiService
+    ITaxonService taxonService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -50,10 +51,20 @@ class BonsaiController {
     }
 
     def edit(Long id) {
-        respond bonsaiService.get(id)
+        //TaxonService taxonService = new TaxonService();
+        List<Taxon> taxonList = taxonService.list([filter:'']);
+        log.info(taxonList.toString());
+        render(view: 'edit', model:[bonsai: bonsaiService.get(id), taxonService: taxonService, test: 'hello', taxonList: taxonList])
     }
 
     def update(Bonsai bonsai) {
+        if (bonsai == null) {
+            bonsai = new Bonsai() //TODO: why are the params not being cast appropriately???
+            bonsai.setProperty("tag", params.tag)
+            bonsai.setProperty("name", params.name)
+            bonsai.setProperty("taxon", taxonService.get(params.taxon)) //params.taxon = taxon id
+            bonsai.setProperty("id", Long.valueOf(params.id))
+        }
         if (bonsai == null) {
             notFound()
             return
