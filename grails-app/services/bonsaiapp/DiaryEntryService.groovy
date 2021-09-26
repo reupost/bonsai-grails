@@ -53,7 +53,7 @@ class DiaryEntryService implements IDiaryEntryService {
         def page = Math.floor(offset/size).toInteger()
 
         def sort = args['sort'] ?: 'entryDate'
-        if (sort == 'bonsai') sort = 'bonsai.name' //do not sort by bonsai id
+        if (sort == 'bonsai') sort = 'bonsai.tag' //do not sort by bonsai id
         def dir = args['order'] ?: 'DESC'
 
         HttpRequest request = HttpRequest.GET("diaryEntry/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
