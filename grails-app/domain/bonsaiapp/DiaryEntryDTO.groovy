@@ -1,9 +1,11 @@
 package bonsaiapp
 
+import java.time.LocalDateTime
+
 class DiaryEntryDTO {
 
     Long id
-    Date entryDate
+    LocalDateTime entryDate
     String entryText
     Long bonsaiId
 

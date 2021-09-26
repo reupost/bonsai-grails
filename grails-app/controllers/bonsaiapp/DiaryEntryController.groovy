@@ -45,14 +45,19 @@ class DiaryEntryController {
     }
 
     def edit(Long id) {
-        respond diaryEntryService.get(id)
+        DiaryEntry diaryEntry = diaryEntryService.get(id)
+        render(view: 'edit', model:[diaryEntry: diaryEntry])
     }
 
-    def update(DiaryEntry diaryEntry) {
+    def update(Long id) {
+        DiaryEntry diaryEntry = diaryEntryService.get(id)
+
         if (diaryEntry == null) {
             notFound()
             return
         }
+
+        diaryEntry.properties = params
 
         try {
             diaryEntryService.save(diaryEntry)

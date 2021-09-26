@@ -28,8 +28,12 @@
             </g:hasErrors>
             <g:form resource="${this.diaryEntry}" method="PUT">
                 <g:hiddenField name="version" value="${this.diaryEntry?.version}" />
+                <!-- <g:hiddenField name="bonsai" value="${diaryEntry.bonsai.id}" /> -->
                 <fieldset class="form">
-                    <f:all bean="diaryEntry"/>
+                    Bonsai: ${diaryEntry.bonsai}
+                    <f:field bean="diaryEntry" property="id"/>
+                    <f:field bean="diaryEntry" property="entryDate"/>
+                    <f:field bean="diaryEntry" property="entryText"/>
                 </fieldset>
                 <fieldset class="buttons">
                     <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />

@@ -49,11 +49,15 @@ class TaxonController {
         respond taxonService.get(id)
     }
 
-    def update(Taxon taxon) {
+    def update(Long id) {
+        Taxon taxon = taxonService.get(id)
+
         if (taxon == null) {
             notFound()
             return
         }
+
+        taxon.properties = params
 
         try {
             taxonService.save(taxon)

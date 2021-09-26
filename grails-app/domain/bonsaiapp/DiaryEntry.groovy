@@ -3,10 +3,12 @@ package bonsaiapp
 import grails.rest.Resource
 import bonsaiapp.EntityPics
 
+import java.time.LocalDateTime
+
 //@Resource(uri = '/api/diary')
 class DiaryEntry {
 
-    Date entryDate
+    LocalDateTime entryDate
     String entryText
 
     static belongsTo = [bonsai:Bonsai]

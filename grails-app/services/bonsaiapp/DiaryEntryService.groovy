@@ -1,6 +1,7 @@
 package bonsaiapp
 
 import com.fasterxml.jackson.core.type.TypeReference
+import grails.util.Holders
 import groovy.json.JsonBuilder
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper
@@ -14,15 +15,19 @@ import javassist.NotFoundException
 class DiaryEntryService implements IDiaryEntryService {
 
     def grailsApplication
+    String queryUrl
+    BlockingHttpClient client
+
+    private setServiceTarget() {
+        queryUrl = grailsApplication.config.bonsaiws.baseurl
+        client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+    }
 
     @Override
     DiaryEntry get(Serializable id) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
+        setServiceTarget()
         HttpRequest request = HttpRequest.GET("diaryEntry/${id}")
-        HttpResponse<String> resp = client.exchange(request, String)
+        HttpResponse<String> resp = this.client.exchange(request, String)
         client.close()
 
         JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntry>(){})
@@ -30,18 +35,15 @@ class DiaryEntryService implements IDiaryEntryService {
 
     @Override
     List<DiaryEntry> list(Map args) {
+        setServiceTarget()
         ResultPage resultPage = pageList(args)
         resultPage.results
     }
 
     ResultPage pageList(Map args) {
-
+        setServiceTarget()
         ResultPage resultPage = new ResultPage()
         InputCleaner inputCleaner = new InputCleaner()
-
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
         Integer offset = (args['offset'] ?: 0) as Integer
         Integer size = (args['max'] ?: 10) as Integer
@@ -73,10 +75,7 @@ class DiaryEntryService implements IDiaryEntryService {
 
     @Override
     Long count() {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
+        setServiceTarget()
         HttpRequest request = HttpRequest.GET("diaryEntry/count")
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
@@ -86,10 +85,7 @@ class DiaryEntryService implements IDiaryEntryService {
 
     @Override
     void delete(Serializable id) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
+        setServiceTarget()
         HttpRequest request = HttpRequest.DELETE("diaryEntry/${id}")
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
@@ -102,13 +98,11 @@ class DiaryEntryService implements IDiaryEntryService {
 
     @Override
     DiaryEntry save(DiaryEntry diaryEntry) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
+        setServiceTarget()
         DiaryEntryDTO diaryEntryDTO = new DiaryEntryDTO()
         Copy.copy(diaryEntry, diaryEntryDTO)
         diaryEntryDTO.id = diaryEntry.getProperty("id") as Long
+        //diaryEntryDTO.setProperty("entryDate", null)
 
         HttpRequest request = HttpRequest.PUT("diaryEntry/dto", diaryEntryDTO)
         HttpResponse<String> resp = client.exchange(request, String)
