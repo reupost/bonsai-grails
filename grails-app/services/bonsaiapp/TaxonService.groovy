@@ -119,13 +119,25 @@ class TaxonService implements ITaxonService {
         Copy.copy(taxon, taxonDTO)
         taxonDTO.id = taxon.getProperty("id") as Long
 
-        HttpRequest request = HttpRequest.PUT("taxon/dto", taxonDTO)
+        HttpRequest request
+        if (taxonDTO.id == null) {
+            //create
+            request = HttpRequest.POST("taxon/dto", taxonDTO)
+        } else {
+            //edit
+            request = HttpRequest.PUT("taxon/dto", taxonDTO)
+        }
+
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
-            JsonToObject.fromJson(resp.body(), new TypeReference<Taxon>(){})
+            TaxonDTO savedTaxonDTO = JsonToObject.fromJson(resp.body(), new TypeReference<TaxonDTO>(){})
+            Copy.copy(savedTaxonDTO, taxon)
+            taxon.setProperty("id", savedTaxonDTO.getId())
+            taxon
+
         } else {
             null
         }

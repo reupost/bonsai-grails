@@ -9,6 +9,8 @@ interface IBonsaiService {
 
     List<Bonsai> list(Map args)
 
+    List<Taxon> listAll(Map args)
+
     Long count()
 
     void delete(Serializable id)

@@ -25,13 +25,16 @@ class BonsaiController {
     }
 
     def create()     {
-        respond new Bonsai(params)
+        render(view: 'create', model:[bonsai: new Bonsai(params), taxonService: taxonService])
     }
 
     def save(Bonsai bonsai) {
         if (bonsai == null) {
             notFound()
             return
+        }
+        if (bonsai.getProperty("taxon") == null) { // when create this is null
+            bonsai.setProperty("taxon", taxonService.get(params.taxon?:0))
         }
 
         try {

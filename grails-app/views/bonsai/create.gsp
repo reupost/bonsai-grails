@@ -27,7 +27,9 @@
             </g:hasErrors>
             <g:form resource="${this.bonsai}" method="POST">
                 <fieldset class="form">
-                    <f:all bean="bonsai"/>
+                    <f:field bean="bonsai" property="tag"/>
+                    <f:field bean="bonsai" property="name"/>
+                    <f:field bean="bonsai" property="taxon" taxonService="${taxonService}" />
                 </fieldset>
                 <fieldset class="buttons">
                     <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />

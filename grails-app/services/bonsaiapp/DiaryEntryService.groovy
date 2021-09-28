@@ -53,7 +53,6 @@ class DiaryEntryService implements IDiaryEntryService {
         def page = Math.floor(offset/size).toInteger()
 
         def sort = args['sort'] ?: 'entryDate'
-        if (sort == 'bonsai') sort = 'bonsai.tag' //do not sort by bonsai id
         def dir = args['order'] ?: 'DESC'
 
         HttpRequest request = HttpRequest.GET("diaryEntry/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
@@ -102,15 +101,25 @@ class DiaryEntryService implements IDiaryEntryService {
         DiaryEntryDTO diaryEntryDTO = new DiaryEntryDTO()
         Copy.copy(diaryEntry, diaryEntryDTO)
         diaryEntryDTO.id = diaryEntry.getProperty("id") as Long
-        //diaryEntryDTO.setProperty("entryDate", null)
 
-        HttpRequest request = HttpRequest.PUT("diaryEntry/dto", diaryEntryDTO)
+        HttpRequest request
+        if (diaryEntryDTO.id == null) {
+            //create
+            request = HttpRequest.POST("diaryEntry/dto", diaryEntryDTO)
+        } else {
+            //edit
+            request = HttpRequest.PUT("diaryEntry/dto", diaryEntryDTO)
+        }
+
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
-            JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntry>(){})
+            DiaryEntryDTO savedDiaryEntryDTO = JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntryDTO>(){})
+            Copy.copy(savedDiaryEntryDTO, diaryEntry)
+            diaryEntry.setProperty("id", savedDiaryEntryDTO.getId())
+            diaryEntry
         } else {
             null
         }

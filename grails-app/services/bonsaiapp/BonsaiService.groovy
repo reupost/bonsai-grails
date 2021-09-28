@@ -15,6 +15,8 @@ class BonsaiService implements IBonsaiService {
 
     def grailsApplication
 
+    def ITaxonService taxonService
+
     @Override
     Bonsai get(Serializable id) {
         def queryUrl = grailsApplication.config.bonsaiws.baseurl
@@ -31,6 +33,14 @@ class BonsaiService implements IBonsaiService {
 
     @Override
     List<Bonsai> list(Map args) {
+        ResultPage resultPage = pageList(args)
+        resultPage.results
+    }
+
+    @Override
+    List<Taxon> listAll(Map args) {
+        args['offset'] = 0
+        args['max'] = 9999;
         ResultPage resultPage = pageList(args)
         resultPage.results
     }
@@ -111,13 +121,24 @@ class BonsaiService implements IBonsaiService {
         Copy.copy(bonsai, bonsaiDTO)
         bonsaiDTO.id = bonsai.getProperty("id") as Long
 
-        HttpRequest request = HttpRequest.PUT("bonsai/dto", bonsaiDTO)
+        HttpRequest request
+        if (bonsaiDTO.id == null) {
+            //create
+            request = HttpRequest.POST("bonsai/dto", bonsaiDTO)
+        } else {
+            //edit
+            request = HttpRequest.PUT("bonsai/dto", bonsaiDTO)
+        }
+
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
-            JsonToObject.fromJson(resp.body(), new TypeReference<Bonsai>(){})
+            BonsaiDTO savedBonsaiDTO = JsonToObject.fromJson(resp.body(), new TypeReference<BonsaiDTO>(){})
+            Copy.copy(savedBonsaiDTO, bonsai)
+            bonsai.setProperty("id", savedBonsaiDTO.getId())
+            bonsai
         } else {
             null
         }

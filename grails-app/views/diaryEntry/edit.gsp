@@ -28,11 +28,14 @@
             </g:hasErrors>
             <g:form resource="${this.diaryEntry}" method="PUT">
                 <g:hiddenField name="version" value="${this.diaryEntry?.version}" />
-                <!-- <g:hiddenField name="bonsai" value="${diaryEntry.bonsai.id}" /> -->
                 <fieldset class="form">
-                    Bonsai: ${diaryEntry.bonsai}
-                    <f:field bean="diaryEntry" property="id"/>
-                    <f:field bean="diaryEntry" property="entryDate"/>
+                    Bonsai: <f:display bean="diaryEntry" property="bonsai"/>
+                    <span style='float:right'>
+                      Date:
+                        <f:display bean="diaryEntry" property="entryDate">
+                          <g:formatDate format="dd MMM yyyy HH:mm" date="${value}"/>
+                        </f:display>
+                    </span>
                     <f:field bean="diaryEntry" property="entryText"/>
                 </fieldset>
                 <fieldset class="buttons">

@@ -29,7 +29,7 @@
             <g:form resource="${this.bonsai}" method="PUT">
                 <g:hiddenField name="version" value="${this.bonsai?.version}" />
                 <fieldset class="form">
-                    <f:field bean="bonsai" property="id"/>
+                    Bonsai: <f:display bean="bonsai" property="id"/>
                     <f:field bean="bonsai" property="tag"/>
                     <f:field bean="bonsai" property="name"/>
                     <f:field bean="bonsai" property="taxon" taxonService="${taxonService}" />

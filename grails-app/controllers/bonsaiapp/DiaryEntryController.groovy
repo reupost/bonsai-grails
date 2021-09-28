@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.*
 class DiaryEntryController {
 
     IDiaryEntryService diaryEntryService
+    IBonsaiService bonsaiService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -19,13 +20,17 @@ class DiaryEntryController {
     }
 
     def create() {
-        respond new DiaryEntry(params)
+        render(view: 'create', model:[diaryEntry: new DiaryEntry(params), bonsaiService: bonsaiService])
     }
 
     def save(DiaryEntry diaryEntry) {
         if (diaryEntry == null) {
             notFound()
             return
+        }
+
+        if (diaryEntry.getProperty("bonsai") == null) { // when create this is null
+            diaryEntry.setProperty("bonsai", bonsaiService.get(params.bonsai?:0))
         }
 
         try {
