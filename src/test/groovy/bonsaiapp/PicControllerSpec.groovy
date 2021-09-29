@@ -17,7 +17,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the index action returns the correct model"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * list(_) >> []
             1 * count() >> 0
         }
@@ -51,7 +51,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the save action correctly persists"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * save(_ as Pic)
         }
 
@@ -72,7 +72,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the save action with an invalid instance"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * save(_ as Pic) >> { Pic pic ->
                 throw new ValidationException("Invalid instance", pic.errors)
             }
@@ -91,7 +91,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the show action with a null id"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * get(null) >> null
         }
 
@@ -104,7 +104,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the show action with a valid id"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * get(2) >> new Pic()
         }
 
@@ -117,7 +117,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the edit action with a null id"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * get(null) >> null
         }
 
@@ -130,7 +130,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the edit action with a valid id"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * get(2) >> new Pic()
         }
 
@@ -155,7 +155,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the update action correctly persists"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * save(_ as Pic)
         }
 
@@ -176,7 +176,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the update action with an invalid instance"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * save(_ as Pic) >> { Pic pic ->
                 throw new ValidationException("Invalid instance", pic.errors)
             }
@@ -205,7 +205,7 @@ class PicControllerSpec extends Specification implements ControllerUnitTest<PicC
 
     void "Test the delete action with an instance"() {
         given:
-        controller.picService = Mock(PicService) {
+        controller.picService = Mock(IPicService) {
             1 * delete(2)
         }
 

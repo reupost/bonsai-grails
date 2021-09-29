@@ -20,6 +20,14 @@
             <div class="message" role="status">${flash.message}</div>
             </g:if>
             <f:display bean="pic" />
+            <!-- Entity: <f:display bean="pic" property="entityType"/>
+            Entity it: <f:display bean="pic" property="entityId"/>
+            Title: <f:display bean="pic" property="title"/>
+            Date: <f:display bean="pic" property="dateTaken"/> -->
+            <a href="${createLink(controller:'pic', action:'viewImage', id:pic.id)}" target="_new">
+              <img class="Photo" style="border-width:0px" src="${createLink(controller:'pic', action:'viewImageThumb', id:pic.id)}" height="${pic.dimythumb}" width="${pic.dimxthumb}" />
+            </a>
+
             <g:form resource="${this.pic}" method="DELETE">
                 <fieldset class="buttons">
                     <g:link class="edit" action="edit" resource="${this.pic}"><g:message code="default.button.edit.label" default="Edit" /></g:link>

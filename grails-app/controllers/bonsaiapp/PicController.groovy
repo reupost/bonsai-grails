@@ -5,7 +5,7 @@ import static org.springframework.http.HttpStatus.*
 
 class PicController {
 
-    PicService picService
+    IPicService picService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -15,7 +15,18 @@ class PicController {
     }
 
     def show(Long id) {
-        respond picService.get(id)
+        //respond picService.get(id)
+        render(view: 'show', model:[pic: picService.get(id)])
+    }
+
+    def viewImage() {
+        byte[] image = picService.getImg(params.id)
+        response.outputStream << image
+    }
+
+    def viewImageThumb() {
+        byte[] image = picService.getImgThumb(params.id)
+        response.outputStream << image
     }
 
     def create() {

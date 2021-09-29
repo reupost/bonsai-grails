@@ -38,7 +38,7 @@ class BonsaiService implements IBonsaiService {
     }
 
     @Override
-    List<Taxon> listAll(Map args) {
+    List<Bonsai> listAll(Map args) {
         args['offset'] = 0
         args['max'] = 9999;
         ResultPage resultPage = pageList(args)

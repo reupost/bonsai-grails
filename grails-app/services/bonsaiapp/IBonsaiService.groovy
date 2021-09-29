@@ -9,7 +9,7 @@ interface IBonsaiService {
 
     List<Bonsai> list(Map args)
 
-    List<Taxon> listAll(Map args)
+    List<Bonsai> listAll(Map args)
 
     Long count()
 

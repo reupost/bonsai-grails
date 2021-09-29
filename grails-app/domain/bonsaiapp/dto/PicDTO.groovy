@@ -1,10 +1,11 @@
 package bonsaiapp
-//@Resource(uri = '/api/pic')
-class Pic {
+
+class PicDTO {
 
     Long entityId
     String entityType
 
+    String filePath
     String title
     Date dateTaken
 
@@ -14,7 +15,5 @@ class Pic {
     Integer dimythumb
 
     static constraints = {
-        entityId nullable: false
-        entityType nullable: false
     }
 }

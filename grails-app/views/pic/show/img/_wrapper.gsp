@@ -1,0 +1,1 @@
+<img class="Photo" src="${createLink(controller:'pic', action:'viewImage', id:'picId')}" />
