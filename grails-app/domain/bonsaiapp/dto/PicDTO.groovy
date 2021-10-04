@@ -1,4 +1,4 @@
-package bonsaiapp
+package bonsaiapp.dto
 
 class PicDTO {
 

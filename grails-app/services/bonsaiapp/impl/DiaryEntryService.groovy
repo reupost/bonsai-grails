@@ -1,7 +1,11 @@
-package bonsaiapp
+package bonsaiapp.impl
 
+import bonsaiapp.DiaryEntry
+import bonsaiapp.IDiaryEntryService
+import bonsaiapp.InputCleaner
+import bonsaiapp.ResultPage
+import bonsaiapp.dto.DiaryEntryDTO
 import com.fasterxml.jackson.core.type.TypeReference
-import grails.util.Holders
 import groovy.json.JsonBuilder
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper

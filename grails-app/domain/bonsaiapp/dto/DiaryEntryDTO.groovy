@@ -1,4 +1,4 @@
-package bonsaiapp
+package bonsaiapp.dto
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer

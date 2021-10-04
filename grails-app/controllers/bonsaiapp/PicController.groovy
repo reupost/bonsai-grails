@@ -1,6 +1,10 @@
 package bonsaiapp
 
 import grails.validation.ValidationException
+import javassist.NotFoundException
+import org.springframework.web.multipart.commons.CommonsMultipartFile
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
+
 import static org.springframework.http.HttpStatus.*
 
 class PicController {
@@ -30,7 +34,7 @@ class PicController {
     }
 
     def create() {
-        respond new Pic(params)
+        render(view: 'create', model:[pic: new Pic(params)])
     }
 
     def save(Pic pic) {
@@ -39,8 +43,16 @@ class PicController {
             return
         }
 
+        def f = request.getFile('imgFile')
+
+        if (f.empty) {
+            flash.message = 'file cannot be empty'
+            render(view: 'create')
+            return
+        }
+
         try {
-            picService.save(pic)
+            picService.saveWithImg(pic, f)
         } catch (ValidationException e) {
             respond pic.errors, view:'create'
             return
@@ -59,14 +71,20 @@ class PicController {
         respond picService.get(id)
     }
 
-    def update(Pic pic) {
+    def update(Long id) {
+        Pic pic = picService.get(id)
+
         if (pic == null) {
             notFound()
             return
         }
 
+        pic.properties = params
+
+        def imgFile
+
         try {
-            picService.save(pic)
+            picService.saveWithImg(pic, imgFile)
         } catch (ValidationException e) {
             respond pic.errors, view:'edit'
             return
@@ -87,11 +105,20 @@ class PicController {
             return
         }
 
-        picService.delete(id)
+        def isDeleted = true
+        try {
+            picService.delete(id)
+        } catch (NotFoundException e) {
+            isDeleted = false
+        }
 
         request.withFormat {
             form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'pic.label', default: 'Pic'), id])
+                if (isDeleted) {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'pic.label', default: 'Pic'), id])
+                } else {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'pic.label', default: 'Pic'), id])
+                }
                 redirect action:"index", method:"GET"
             }
             '*'{ render status: NO_CONTENT }

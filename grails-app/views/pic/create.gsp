@@ -25,14 +25,15 @@
                 </g:eachError>
             </ul>
             </g:hasErrors>
-            <g:form resource="${this.pic}" method="POST">
+            <g:uploadForm resource="${this.pic}" method="POST" >
                 <fieldset class="form">
                     <f:all bean="pic"/>
+                    <input type='file' name="imgFile"/>
                 </fieldset>
                 <fieldset class="buttons">
                     <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
                 </fieldset>
-            </g:form>
+            </g:uploadForm>
         </div>
     </body>
 </html>

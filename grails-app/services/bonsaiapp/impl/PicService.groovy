@@ -1,6 +1,10 @@
 package bonsaiapp
 
+
+import bonsaiapp.dto.PicDTO
+
 import com.fasterxml.jackson.core.type.TypeReference
+import grails.converters.JSON
 import groovy.json.JsonBuilder
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper
@@ -9,6 +13,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
+import io.micronaut.http.client.multipart.MultipartBody
 import javassist.NotFoundException
 
 class PicService implements IPicService {
@@ -139,38 +144,69 @@ class PicService implements IPicService {
 
     @Override
     Pic save(Pic pic) {
-        return null
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
+
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+
+        HttpRequest request
+        if (pic.id == null) {
+            //create
+            request = HttpRequest.POST("pic", pic)
+        } else {
+            //edit
+            request = HttpRequest.POST("pic", pic) //TODO make PUT
+        }
+
+        HttpResponse<String> resp = client.exchange(request, String)
+        client.close()
+
+        if (resp.getStatus() == HttpStatus.OK) {
+            //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
+            PicDTO savedPicDTO = JsonToObject.fromJson(resp.body(), new TypeReference<PicDTO>(){})
+            Copy.copy(savedPicDTO, pic)
+            pic.setProperty("id", savedPicDTO.getId())
+            pic
+        } else {
+            null
+        }
     }
-//    @Override
-//    Pic save(Pic pic) {
-//        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-//
-//        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-//
-//        PicDTO picDTO = new PicDTO()
-//        Copy.copy(pic, picDTO)
-//        picDTO.id = pic.getProperty("id") as Long
-//
-//        HttpRequest request
-//        if (picDTO.id == null) {
-//            //create
-//            request = HttpRequest.POST("pic/dto", picDTO)
-//        } else {
-//            //edit
-//            request = HttpRequest.PUT("pic/dto", picDTO)
-//        }
-//
-//        HttpResponse<String> resp = client.exchange(request, String)
-//        client.close()
-//
-//        if (resp.getStatus() == HttpStatus.OK) {
-//            //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
-//            PicDTO savedPicDTO = JsonToObject.fromJson(resp.body(), new TypeReference<PicDTO>(){})
-//            Copy.copy(savedPicDTO, pic)
-//            pic.setProperty("id", savedPicDTO.getId())
-//            pic
-//        } else {
-//            null
-//        }
-//    }
+
+    Pic saveWithImg(Pic pic, imgFile) {
+
+        String pString = pic as JSON
+
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
+
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+
+        MultipartBody.Builder requestBody = MultipartBody.builder()
+            .addPart("p", pString)
+        if (imgFile != null) {
+            requestBody.addPart("file", imgFile.filename, imgFile.getBytes())
+        }
+
+        HttpRequest request
+        //TODO DTO needed? work on spring side
+        if (pic.getProperty("id") == null) {
+            //create
+            request = HttpRequest.POST("pic", requestBody)
+        } else {
+            //edit
+            request = HttpRequest.POST("pic", requestBody)
+        }
+        request.header("Content-Type", "multipart/form-data")
+        HttpResponse<String> resp = client.exchange(request, String)
+
+        client.close()
+
+        if (resp.getStatus() == HttpStatus.OK) {
+            //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
+            PicDTO savedPicDTO = JsonToObject.fromJson(resp.body(), new TypeReference<PicDTO>(){})
+            Copy.copy(savedPicDTO, pic)
+            pic.setProperty("id", savedPicDTO.getId())
+            pic
+        } else {
+            null
+        }
+    }
 }
