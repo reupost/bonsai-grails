@@ -26,15 +26,19 @@
                 </g:eachError>
             </ul>
             </g:hasErrors>
-            <g:form resource="${this.pic}" method="PUT">
+            <g:uploadForm resource="${this.pic}" method="PUT" >
                 <g:hiddenField name="version" value="${this.pic?.version}" />
                 <fieldset class="form">
                     <f:all bean="pic"/>
+                    <a href="${createLink(controller:'pic', action:'viewImage', id:pic.id)}" target="_new">
+                      <img class="Photo" style="border-width:0px" src="${createLink(controller:'pic', action:'viewImageThumb', id:pic.id)}" height="${pic.dimythumb}" width="${pic.dimxthumb}" />
+                    </a>
+                    <input type='file' name="imgFile"/>
                 </fieldset>
                 <fieldset class="buttons">
                     <input class="save" type="submit" value="${message(code: 'default.button.update.label', default: 'Update')}" />
                 </fieldset>
-            </g:form>
+            </g:uploadForm>
         </div>
     </body>
 </html>

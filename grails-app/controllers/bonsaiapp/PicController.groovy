@@ -81,7 +81,7 @@ class PicController {
 
         pic.properties = params
 
-        def imgFile
+        def imgFile = request.getFile('imgFile')
 
         try {
             picService.saveWithImg(pic, imgFile)
