@@ -27,7 +27,10 @@
             </g:hasErrors>
             <g:uploadForm resource="${this.pic}" method="POST" >
                 <fieldset class="form">
-                    <f:all bean="pic"/>
+                    <f:field bean="pic" property="entityType"/>
+                    <f:field bean="pic" property="entityId"/>
+                    <f:field bean="pic" property="dateTaken"/>
+                    <f:field bean="pic" property="title"/>
                     <input type='file' name="imgFile"/>
                 </fieldset>
                 <fieldset class="buttons">

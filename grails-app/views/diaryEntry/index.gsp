@@ -15,6 +15,17 @@
         </div>
         <div id="list-diaryEntry" class="content scaffold-list" role="main">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+            <span style="float:right;margin-right:10px">
+               <form action="">
+                  <input type="hidden" id="offset" name="offset" value="${params.offset}"/>
+                  <input type="hidden" id="max" name="max" value="${params.max}"/>
+                  <input type="hidden" id="sort" name="sort" value="${params.sort}"/>
+                  <input type="hidden" id="order" name="order" value="${params.order}"/>
+                  Search: <input type="text" id="searchFilter" name="searchFilter" width="20" value="${params.searchFilter}"/>
+                  <input type="submit" value="Go"/>
+                  <input type="button" value="Clear" onclick="javascript:document.getElementById('searchFilter').value='';form.submit()"/>
+               </form>
+            </span>
             <g:if test="${flash.message}">
                 <div class="message" role="status">${flash.message}</div>
             </g:if>

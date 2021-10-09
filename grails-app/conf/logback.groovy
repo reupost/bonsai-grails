@@ -35,4 +35,4 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
     logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
 }
 root(ERROR, ['STDOUT'])
-logger('grails.plugin.formfields.FormFieldsTemplateService', DEBUG,['STDOUT'])
+//logger('grails.plugin.formfields.FormFieldsTemplateService', DEBUG,['STDOUT'])

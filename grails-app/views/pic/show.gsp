@@ -19,11 +19,10 @@
             <g:if test="${flash.message}">
             <div class="message" role="status">${flash.message}</div>
             </g:if>
-            <f:display bean="pic" />
-            <!-- Entity: <f:display bean="pic" property="entityType"/>
-            Entity it: <f:display bean="pic" property="entityId"/>
-            Title: <f:display bean="pic" property="title"/>
-            Date: <f:display bean="pic" property="dateTaken"/> -->
+            Entity: <f:display bean="pic" property="entityType"/><br/>
+            Entity id: <f:display bean="pic" property="entityId"/><br/>
+            Title: <f:display bean="pic" property="title"/><br/>
+            Date: <f:display bean="pic" property="dateTaken"/><br/>
             <a href="${createLink(controller:'pic', action:'viewImage', id:pic.id)}" target="_new">
               <img class="Photo" style="border-width:0px" src="${createLink(controller:'pic', action:'viewImageThumb', id:pic.id)}" height="${pic.dimythumb}" width="${pic.dimxthumb}" />
             </a>

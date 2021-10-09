@@ -1,7 +1,9 @@
 package bonsaiapp
 
 
+import bonsaiapp.Copy
 import bonsaiapp.dto.PicDTO
+import bonsaiapp.JsonToObject
 
 import com.fasterxml.jackson.core.type.TypeReference
 import grails.converters.JSON
@@ -92,7 +94,7 @@ class PicService implements IPicService {
         filter = URLEncoder.encode(filter, "UTF-8")
         def page = Math.floor(offset / size).toInteger()
 
-        def sort = args['sort'] ?: 'tag'
+        def sort = args['sort'] ?: 'entityType'
         //if (sort == 'taxon') sort = 'taxon.fullName' //do not sort by taxon id
         def dir = args['order'] ?: 'ASC'
 

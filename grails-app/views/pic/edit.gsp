@@ -29,7 +29,10 @@
             <g:uploadForm resource="${this.pic}" method="PUT" >
                 <g:hiddenField name="version" value="${this.pic?.version}" />
                 <fieldset class="form">
-                    <f:all bean="pic"/>
+                    <f:field bean="pic" property="entityType"/>
+                    <f:field bean="pic" property="entityId"/>
+                    <f:field bean="pic" property="dateTaken"/>
+                    <f:field bean="pic" property="title"/>
                     <a href="${createLink(controller:'pic', action:'viewImage', id:pic.id)}" target="_new">
                       <img class="Photo" style="border-width:0px" src="${createLink(controller:'pic', action:'viewImageThumb', id:pic.id)}" height="${pic.dimythumb}" width="${pic.dimxthumb}" />
                     </a>
