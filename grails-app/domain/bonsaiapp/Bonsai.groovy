@@ -8,7 +8,8 @@ class Bonsai {
     String name
     String tag
 
-    static belongsTo = [taxon: Taxon]
+
+    static belongsTo = [taxon: Taxon, user: User]
     static hasMany = [diaryEntries: DiaryEntry]
 
     static constraints = {

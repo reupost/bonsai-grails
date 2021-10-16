@@ -9,6 +9,7 @@ class BonsaiController {
 
     IBonsaiService bonsaiService
     ITaxonService taxonService
+    IUserService userService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
@@ -25,7 +26,7 @@ class BonsaiController {
     }
 
     def create()     {
-        render(view: 'create', model:[bonsai: new Bonsai(params), taxonService: taxonService])
+        render(view: 'create', model:[bonsai: new Bonsai(params), taxonService: taxonService, userService: userService])
     }
 
     def save(Bonsai bonsai) {
@@ -35,6 +36,9 @@ class BonsaiController {
         }
         if (bonsai.getProperty("taxon") == null) { // when create this is null
             bonsai.setProperty("taxon", taxonService.get(params.taxon?:0))
+        }
+        if (bonsai.getProperty("user") == null) { // when create this is null
+            bonsai.setProperty("user", userService.get(params.user?:0))
         }
 
         try {
@@ -54,7 +58,7 @@ class BonsaiController {
     }
 
     def edit(Long id) {
-        render(view: 'edit', model:[bonsai: bonsaiService.get(id), taxonService: taxonService])
+        render(view: 'edit', model:[bonsai: bonsaiService.get(id), taxonService: taxonService, userService: userService])
     }
 
     def update(Long id) {
@@ -66,7 +70,8 @@ class BonsaiController {
         }
 
         bonsai.properties = params
-        bonsai.setProperty("taxon", taxonService.get(params.taxon)) //params.taxon = taxon id
+        //bonsai.setProperty("taxon", taxonService.get(params.taxon)) //params.taxon = taxon id
+
 
         try {
             bonsaiService.save(bonsai)

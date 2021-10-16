@@ -30,6 +30,7 @@
                     <f:field bean="bonsai" property="tag"/>
                     <f:field bean="bonsai" property="name"/>
                     <f:field bean="bonsai" property="taxon" taxonService="${taxonService}" />
+                    <f:field bean="bonsai" property="user" userService="${userService}" />
                 </fieldset>
                 <fieldset class="buttons">
                     <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />

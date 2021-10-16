@@ -72,6 +72,10 @@ dependencies {
 
     runtime 'mysql:mysql-connector-java:5.1.29'
 
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-amplify
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-amplify', version: '1.12.85'
+
+
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.mockito:mockito-core"
