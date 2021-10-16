@@ -1,0 +1,152 @@
+package bonsaiapp.impl
+
+import bonsaiapp.Copy
+import bonsaiapp.IUserService
+import bonsaiapp.InputCleaner
+import bonsaiapp.JsonToObject
+import bonsaiapp.ResultPage
+import bonsaiapp.User
+import bonsaiapp.dto.UserDTO
+import com.fasterxml.jackson.core.type.TypeReference
+import groovy.json.JsonBuilder
+import groovy.json.JsonParserType
+import groovy.json.JsonSlurper
+import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
+import io.micronaut.http.client.BlockingHttpClient
+import io.micronaut.http.client.HttpClient
+import javassist.NotFoundException
+
+class UserService implements IUserService {
+
+    def grailsApplication
+
+    @Override
+    User get(Serializable id) {
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
+
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+
+        HttpRequest request = HttpRequest.GET("user/${id}")
+        HttpResponse<String> resp = client.exchange(request, String)
+        client.close()
+
+        JsonToObject.fromJson(resp.body(), new TypeReference<User>(){})
+    }
+
+    @Override
+    List<User> list(Map args) {
+        ResultPage resultPage = pageList(args)
+        resultPage.results
+    }
+
+    @Override
+    List<User> listAll(Map args) {
+        args['offset'] = 0
+        args['max'] = 100;
+        ResultPage resultPage = pageList(args)
+        resultPage.results
+    }
+
+    ResultPage pageList(Map args) {
+
+        ResultPage resultPage = new ResultPage()
+        InputCleaner inputCleaner = new InputCleaner()
+
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
+
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+
+        Integer offset = (args['offset'] ?: 0) as Integer
+        Integer size = (args['max'] ?: 10) as Integer
+
+        def filter = inputCleaner.getOnlyLettersAndNumbers((args['searchFilter'] ?: "").toString())
+        filter = URLEncoder.encode(filter, "UTF-8")
+        def page = Math.floor(offset/size).toInteger()
+
+        def sort = args['sort'] ?: 'userName'
+        //if (sort == 'user') sort = 'user.fullName' //do not sort by user id
+        def dir = args['order'] ?: 'ASC'
+
+        HttpRequest request = HttpRequest.GET("user/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
+        HttpResponse<String> resp = client.exchange(request, String)
+        client.close()
+
+        String json = resp.body()
+        //this is bit of a hacky way of getting around the REST service returning 'content:[array],pageable,etc' instead of just 'array'
+        def parser = new JsonSlurper().setType(JsonParserType.LAX)
+        def jsonResp = parser.parseText(json)
+        def jsonUserList = new JsonBuilder(jsonResp.content).toPrettyString()
+
+        List<User> userList = JsonToObject.fromJson(jsonUserList, new TypeReference<List<User>>(){})
+
+        resultPage.results = userList
+        resultPage.pageModel = [userCount: jsonResp.totalElements]
+        resultPage
+    }
+
+    @Override
+    Long count() {
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
+
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+
+        HttpRequest request = HttpRequest.GET("user/count")
+        HttpResponse<String> resp = client.exchange(request, String)
+        client.close()
+
+        resp.body().toLong()
+    }
+
+    @Override
+    void delete(Serializable id) {
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
+
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+
+        HttpRequest request = HttpRequest.DELETE("user/${id}")
+        HttpResponse<String> resp = client.exchange(request, String)
+        client.close()
+
+        if (resp.getStatus() != HttpStatus.OK) {
+            def e = new NotFoundException("User with id ${id} could not be deleted")
+            throw e
+        }
+    }
+
+    @Override
+    User save(User user) {
+        def queryUrl = grailsApplication.config.bonsaiws.baseurl
+
+        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+
+        UserDTO userDTO = new UserDTO()
+        Copy.copy(user, userDTO)
+        userDTO.id = user.getProperty("id") as Long
+
+        HttpRequest request
+        if (userDTO.id == null) {
+            //create
+            request = HttpRequest.POST("user/dto", userDTO)
+        } else {
+            //edit
+            request = HttpRequest.PUT("user/dto", userDTO)
+        }
+
+        HttpResponse<String> resp = client.exchange(request, String)
+        client.close()
+
+        if (resp.getStatus() == HttpStatus.OK) {
+            //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
+            UserDTO savedUserDTO = JsonToObject.fromJson(resp.body(), new TypeReference<UserDTO>(){})
+            Copy.copy(savedUserDTO, user)
+            user.setProperty("id", savedUserDTO.getId())
+            user
+
+        } else {
+            null
+        }
+    }
+
+}
