@@ -1,27 +1,20 @@
 package bonsaiapp.impl
 
-import bonsaiapp.Bonsai
 import bonsaiapp.Copy
 import bonsaiapp.DiaryEntry
 import bonsaiapp.IDiaryEntryService
-import bonsaiapp.InputCleaner
 import bonsaiapp.JsonToObject
 import bonsaiapp.ResultPage
-import bonsaiapp.Taxon
-import bonsaiapp.dto.BonsaiDTO
 import bonsaiapp.dto.DiaryEntryDTO
 import com.fasterxml.jackson.core.type.TypeReference
-import groovy.json.JsonBuilder
-import groovy.json.JsonParserType
-import groovy.json.JsonSlurper
-import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
-import javassist.NotFoundException
 
 class DiaryEntryService extends BaseService implements IDiaryEntryService {
+
+    static String REST_URL_ROOT = "diaryEntry"
 
     def grailsApplication
     String queryUrl
@@ -34,7 +27,7 @@ class DiaryEntryService extends BaseService implements IDiaryEntryService {
 
     @Override
     DiaryEntry get(Serializable id) {
-        String json = getRestJsonObject(grailsApplication, "diaryEntry", id)
+        String json = getRestJsonObject(grailsApplication, REST_URL_ROOT, id)
         JsonToObject.fromJson(json, new TypeReference<DiaryEntry>(){})
     }
 
@@ -43,7 +36,7 @@ class DiaryEntryService extends BaseService implements IDiaryEntryService {
 
         args['sort'] = args['sort'] ?: 'entryDate'
         args['order'] = args['order'] ?: 'DESC'
-        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, "diaryEntry", args)
+        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, REST_URL_ROOT, args)
         List<DiaryEntry> diaryEntryList = JsonToObject.fromJson(jsonList, new TypeReference<List<DiaryEntry>>(){})
 
         resultPage.results = diaryEntryList
@@ -53,17 +46,17 @@ class DiaryEntryService extends BaseService implements IDiaryEntryService {
 
     @Override
     Long count() {
-        getRestCount(grailsApplication, "diaryEntry")
+        getRestCount(grailsApplication, REST_URL_ROOT)
     }
 
     @Override
     void delete(Serializable id) {
-        deleteRestObject(grailsApplication, "diaryEntry", id)
+        deleteRestObject(grailsApplication, REST_URL_ROOT, id)
     }
 
     @Override
     DiaryEntry save(DiaryEntry diaryEntry) {
-        HttpResponse<String> resp = saveRestObject(grailsApplication, "diaryEntry", diaryEntry)
+        HttpResponse<String> resp = saveRestObject(grailsApplication, REST_URL_ROOT, diaryEntry)
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?

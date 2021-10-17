@@ -4,24 +4,16 @@ import bonsaiapp.Bonsai
 import bonsaiapp.Copy
 import bonsaiapp.IBonsaiService
 import bonsaiapp.ITaxonService
-import bonsaiapp.InputCleaner
 import bonsaiapp.JsonToObject
 import bonsaiapp.ResultPage
-import bonsaiapp.Taxon
 import bonsaiapp.dto.BonsaiDTO
 import com.fasterxml.jackson.core.type.TypeReference
-import grails.core.GrailsApplication
-import groovy.json.JsonBuilder
-import groovy.json.JsonParserType
-import groovy.json.JsonSlurper
-import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.client.BlockingHttpClient
-import io.micronaut.http.client.HttpClient
-import javassist.NotFoundException
 
 class BonsaiService extends BaseService implements IBonsaiService {
+
+    static String REST_URL_ROOT = "bonsai"
 
     def grailsApplication
 
@@ -29,7 +21,7 @@ class BonsaiService extends BaseService implements IBonsaiService {
 
     @Override
     Bonsai get(Serializable id) {
-        String json = getRestJsonObject(grailsApplication, "bonsai", id)
+        String json = getRestJsonObject(grailsApplication, REST_URL_ROOT, id)
         JsonToObject.fromJson(json, new TypeReference<Bonsai>(){})
     }
 
@@ -38,7 +30,7 @@ class BonsaiService extends BaseService implements IBonsaiService {
 
         args['sort'] = args['sort'] ?: 'tag'
         if (args['sort'] == 'taxon') args['sort'] = 'taxon.fullName'
-        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, "bonsai", args)
+        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, REST_URL_ROOT, args)
         List<Bonsai> bonsaiList = JsonToObject.fromJson(jsonList, new TypeReference<List<Bonsai>>(){})
 
         resultPage.results = bonsaiList
@@ -48,17 +40,17 @@ class BonsaiService extends BaseService implements IBonsaiService {
 
     @Override
     Long count() {
-        getRestCount(grailsApplication, "bonsai")
+        getRestCount(grailsApplication, REST_URL_ROOT)
     }
 
     @Override
     void delete(Serializable id) {
-        deleteRestObject(grailsApplication, "bonsai", id)
+        deleteRestObject(grailsApplication, REST_URL_ROOT, id)
     }
 
     @Override
     Bonsai save(Bonsai bonsai) {
-        HttpResponse<String> resp = saveRestObject(grailsApplication, "bonsai", bonsai)
+        HttpResponse<String> resp = saveRestObject(grailsApplication, REST_URL_ROOT, bonsai)
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?

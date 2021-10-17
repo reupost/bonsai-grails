@@ -1,6 +1,5 @@
 package bonsaiapp
 
-import bonsaiapp.dto.BonsaiDTO
 import bonsaiapp.dto.PicDTO
 import bonsaiapp.impl.BaseService
 import com.fasterxml.jackson.core.type.TypeReference
@@ -11,15 +10,16 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.multipart.MultipartBody
-import javassist.NotFoundException
 
 class PicService extends BaseService implements IPicService {
+
+    static String REST_URL_ROOT = "pic"
 
     def grailsApplication
 
     @Override
     Pic get(Serializable id) {
-        String json = getRestJsonObject(grailsApplication, "pic", id)
+        String json = getRestJsonObject(grailsApplication, REST_URL_ROOT, id)
         JsonToObject.fromJson(json, new TypeReference<Pic>(){})
     }
 
@@ -29,7 +29,7 @@ class PicService extends BaseService implements IPicService {
 
         BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
-        HttpRequest requestImg = HttpRequest.GET("pic/image/${id}")
+        HttpRequest requestImg = HttpRequest.GET("${REST_URL_ROOT}/image/${id}")
         HttpResponse<byte[]> respImg = client.exchange(requestImg, byte[])
         client.close()
 
@@ -43,7 +43,7 @@ class PicService extends BaseService implements IPicService {
 
         BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
-        HttpRequest requestImg = HttpRequest.GET("pic/thumb/${id}")
+        HttpRequest requestImg = HttpRequest.GET("${REST_URL_ROOT}/thumb/${id}")
         HttpResponse<byte[]> respImg = client.exchange(requestImg, byte[])
         client.close()
 
@@ -55,7 +55,7 @@ class PicService extends BaseService implements IPicService {
         ResultPage resultPage = new ResultPage()
 
         args['sort'] = args['sort'] ?: 'entityType'
-        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, "pic", args)
+        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, REST_URL_ROOT, args)
         List<Pic> picList = JsonToObject.fromJson(jsonList, new TypeReference<List<Pic>>(){})
 
         resultPage.results = picList
@@ -65,17 +65,17 @@ class PicService extends BaseService implements IPicService {
 
     @Override
     Long count() {
-        getRestCount(grailsApplication, "pic")
+        getRestCount(grailsApplication, REST_URL_ROOT)
     }
 
     @Override
     void delete(Serializable id) {
-        deleteRestObject(grailsApplication, "pic", id)
+        deleteRestObject(grailsApplication, REST_URL_ROOT, id)
     }
 
     @Override
     Pic save(Pic pic) {
-        HttpResponse<String> resp = saveRestObject(grailsApplication, "pic", pic)
+        HttpResponse<String> resp = saveRestObject(grailsApplication, REST_URL_ROOT, pic)
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
@@ -106,10 +106,10 @@ class PicService extends BaseService implements IPicService {
         //TODO DTO needed? work on spring side
         if (pic.getProperty("id") == null) {
             //create
-            request = HttpRequest.POST("pic", requestBody)
+            request = HttpRequest.POST(REST_URL_ROOT, requestBody)
         } else {
             //edit
-            request = HttpRequest.POST("pic", requestBody)
+            request = HttpRequest.POST(REST_URL_ROOT, requestBody)
         }
         request.header("Content-Type", "multipart/form-data")
         HttpResponse<String> resp = client.exchange(request, String)
