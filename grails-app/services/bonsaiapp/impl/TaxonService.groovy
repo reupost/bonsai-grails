@@ -6,6 +6,8 @@ import bonsaiapp.InputCleaner
 import bonsaiapp.JsonToObject
 import bonsaiapp.ResultPage
 import bonsaiapp.Taxon
+import bonsaiapp.User
+import bonsaiapp.dto.BonsaiDTO
 import bonsaiapp.dto.TaxonDTO
 import com.fasterxml.jackson.core.type.TypeReference
 import groovy.json.JsonBuilder
@@ -18,124 +20,41 @@ import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 import javassist.NotFoundException
 
-class TaxonService implements ITaxonService {
+class TaxonService extends BaseService implements ITaxonService {
 
     def grailsApplication
 
     @Override
     Taxon get(Serializable id) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
-        HttpRequest request = HttpRequest.GET("taxon/${id}")
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
-
-        JsonToObject.fromJson(resp.body(), new TypeReference<Taxon>(){})
-    }
-
-    @Override
-    List<Taxon> list(Map args) {
-        ResultPage resultPage = pageList(args)
-        resultPage.results
-    }
-
-    @Override
-    List<Taxon> listAll(Map args) {
-        args['offset'] = 0
-        args['max'] = 9999;
-        ResultPage resultPage = pageList(args)
-        resultPage.results
+        String json = getRestJsonObject(grailsApplication, "taxon", id)
+        JsonToObject.fromJson(json, new TypeReference<Taxon>(){})
     }
 
     ResultPage pageList(Map args) {
-
         ResultPage resultPage = new ResultPage()
-        InputCleaner inputCleaner = new InputCleaner()
 
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
-        Integer offset = (args['offset'] ?: 0) as Integer
-        Integer size = (args['max'] ?: 10) as Integer
-
-        def filter = inputCleaner.getOnlyLettersAndNumbers((args['searchFilter'] ?: "").toString())
-        filter = URLEncoder.encode(filter, "UTF-8")
-        def page = Math.floor(offset/size).toInteger()
-
-        def sort = args['sort'] ?: 'fullName'
-        //if (sort == 'taxon') sort = 'taxon.fullName' //do not sort by taxon id
-        def dir = args['order'] ?: 'ASC'
-
-        HttpRequest request = HttpRequest.GET("taxon/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
-
-        String json = resp.body()
-        //this is bit of a hacky way of getting around the REST service returning 'content:[array],pageable,etc' instead of just 'array'
-        def parser = new JsonSlurper().setType(JsonParserType.LAX)
-        def jsonResp = parser.parseText(json)
-        def jsonTaxonList = new JsonBuilder(jsonResp.content).toPrettyString()
-
-        List<Taxon> taxonList = JsonToObject.fromJson(jsonTaxonList, new TypeReference<List<Taxon>>(){})
+        args['sort'] = args['sort'] ?: 'fullName'
+        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, "taxon", args)
+        List<Taxon> taxonList = JsonToObject.fromJson(jsonList, new TypeReference<List<Taxon>>(){})
 
         resultPage.results = taxonList
-        resultPage.pageModel = [taxonCount: jsonResp.totalElements]
+        resultPage.pageModel = [taxonCount: totalElements]
         resultPage
     }
 
     @Override
     Long count() {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
-        HttpRequest request = HttpRequest.GET("taxon/count")
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
-
-        resp.body().toLong()
+        getRestCount(grailsApplication, "taxon")
     }
 
     @Override
     void delete(Serializable id) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
-        HttpRequest request = HttpRequest.DELETE("taxon/${id}")
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
-
-        if (resp.getStatus() != HttpStatus.OK) {
-            def e = new NotFoundException("Taxon with id ${id} could not be deleted")
-            throw e
-        }
+        deleteRestObject(grailsApplication, "taxon", id)
     }
 
     @Override
     Taxon save(Taxon taxon) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
-        TaxonDTO taxonDTO = new TaxonDTO()
-        Copy.copy(taxon, taxonDTO)
-        taxonDTO.id = taxon.getProperty("id") as Long
-
-        HttpRequest request
-        if (taxonDTO.id == null) {
-            //create
-            request = HttpRequest.POST("taxon/dto", taxonDTO)
-        } else {
-            //edit
-            request = HttpRequest.PUT("taxon/dto", taxonDTO)
-        }
-
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
+        HttpResponse<String> resp = saveRestObject(grailsApplication, "taxon", taxon)
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?

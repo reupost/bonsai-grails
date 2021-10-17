@@ -1,11 +1,14 @@
 package bonsaiapp.impl
 
+import bonsaiapp.Bonsai
 import bonsaiapp.Copy
 import bonsaiapp.DiaryEntry
 import bonsaiapp.IDiaryEntryService
 import bonsaiapp.InputCleaner
 import bonsaiapp.JsonToObject
 import bonsaiapp.ResultPage
+import bonsaiapp.Taxon
+import bonsaiapp.dto.BonsaiDTO
 import bonsaiapp.dto.DiaryEntryDTO
 import com.fasterxml.jackson.core.type.TypeReference
 import groovy.json.JsonBuilder
@@ -18,7 +21,7 @@ import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 import javassist.NotFoundException
 
-class DiaryEntryService implements IDiaryEntryService {
+class DiaryEntryService extends BaseService implements IDiaryEntryService {
 
     def grailsApplication
     String queryUrl
@@ -31,94 +34,36 @@ class DiaryEntryService implements IDiaryEntryService {
 
     @Override
     DiaryEntry get(Serializable id) {
-        setServiceTarget()
-        HttpRequest request = HttpRequest.GET("diaryEntry/${id}")
-        HttpResponse<String> resp = this.client.exchange(request, String)
-        client.close()
-
-        JsonToObject.fromJson(resp.body(), new TypeReference<DiaryEntry>(){})
-    }
-
-    @Override
-    List<DiaryEntry> list(Map args) {
-        setServiceTarget()
-        ResultPage resultPage = pageList(args)
-        resultPage.results
+        String json = getRestJsonObject(grailsApplication, "diaryEntry", id)
+        JsonToObject.fromJson(json, new TypeReference<DiaryEntry>(){})
     }
 
     ResultPage pageList(Map args) {
-        setServiceTarget()
         ResultPage resultPage = new ResultPage()
-        InputCleaner inputCleaner = new InputCleaner()
 
-        Integer offset = (args['offset'] ?: 0) as Integer
-        Integer size = (args['max'] ?: 10) as Integer
-
-        def filter = inputCleaner.getOnlyLettersAndNumbers((args['searchFilter'] ?: "").toString())
-        filter = URLEncoder.encode(filter, "UTF-8")
-        def page = Math.floor(offset/size).toInteger()
-
-        def sort = args['sort'] ?: 'entryDate'
-        def dir = args['order'] ?: 'DESC'
-
-        HttpRequest request = HttpRequest.GET("diaryEntry/page?filter=${filter}&page=${page}&size=${size}&sort=${sort}&dir=${dir}")
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
-
-        String json = resp.body()
-        //this is bit of a hacky way of getting around the REST service returning 'content:[array]' instead of just 'array'
-        def parser = new JsonSlurper().setType(JsonParserType.LAX)
-        def jsonResp = parser.parseText(json)
-        def jsonDiaryEntryList = new JsonBuilder(jsonResp.content).toPrettyString()
-
-        List<DiaryEntry> diaryEntryList = JsonToObject.fromJson(jsonDiaryEntryList, new TypeReference<List<DiaryEntry>>(){})
+        args['sort'] = args['sort'] ?: 'entryDate'
+        args['order'] = args['order'] ?: 'DESC'
+        def (String jsonList, Long totalElements) = getRestJsonList(grailsApplication, "diaryEntry", args)
+        List<DiaryEntry> diaryEntryList = JsonToObject.fromJson(jsonList, new TypeReference<List<DiaryEntry>>(){})
 
         resultPage.results = diaryEntryList
-        resultPage.pageModel = [diaryEntryCount: jsonResp.totalElements]
+        resultPage.pageModel = [diaryEntryCount: totalElements]
         resultPage
     }
 
     @Override
     Long count() {
-        setServiceTarget()
-        HttpRequest request = HttpRequest.GET("diaryEntry/count")
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
-
-        resp.body().toLong()
+        getRestCount(grailsApplication, "diaryEntry")
     }
 
     @Override
     void delete(Serializable id) {
-        setServiceTarget()
-        HttpRequest request = HttpRequest.DELETE("diaryEntry/${id}")
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
-
-        if (resp.getStatus() != HttpStatus.OK) {
-            def e = new NotFoundException("DiaryEntry with id ${id} could not be deleted")
-            throw e
-        }
+        deleteRestObject(grailsApplication, "diaryEntry", id)
     }
 
     @Override
     DiaryEntry save(DiaryEntry diaryEntry) {
-        setServiceTarget()
-        DiaryEntryDTO diaryEntryDTO = new DiaryEntryDTO()
-        Copy.copy(diaryEntry, diaryEntryDTO)
-        diaryEntryDTO.id = diaryEntry.getProperty("id") as Long
-
-        HttpRequest request
-        if (diaryEntryDTO.id == null) {
-            //create
-            request = HttpRequest.POST("diaryEntry/dto", diaryEntryDTO)
-        } else {
-            //edit
-            request = HttpRequest.PUT("diaryEntry/dto", diaryEntryDTO)
-        }
-
-        HttpResponse<String> resp = client.exchange(request, String)
-        client.close()
+        HttpResponse<String> resp = saveRestObject(grailsApplication, "diaryEntry", diaryEntry)
 
         if (resp.getStatus() == HttpStatus.OK) {
             //TODO refactor: how much do we need the DTO if we end up resorting to parsing raw json?
