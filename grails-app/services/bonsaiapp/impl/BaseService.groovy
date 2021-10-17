@@ -2,11 +2,7 @@ package bonsaiapp.impl
 
 import bonsaiapp.Copy
 import bonsaiapp.InputCleaner
-import bonsaiapp.JsonToObject
 import bonsaiapp.ResultPage
-import bonsaiapp.User
-import bonsaiapp.dto.UserDTO
-import com.fasterxml.jackson.core.type.TypeReference
 import grails.core.GrailsApplication
 import groovy.json.JsonBuilder
 import groovy.json.JsonParserType
@@ -18,15 +14,18 @@ import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 import javassist.NotFoundException
 
-import java.lang.invoke.MethodHandleImpl
-
 class BaseService {
 
+    static String queryUrl
+    static BlockingHttpClient client
+
+    private static setServiceTarget(GrailsApplication grailsApplication) {
+        queryUrl = grailsApplication.config.bonsaiws.baseurl
+        client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+    }
+
     static String getRestJsonObject(GrailsApplication grailsApplication, String urlPath, Serializable id) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-
+        setServiceTarget(grailsApplication)
         HttpRequest request = HttpRequest.GET("${urlPath}/${id}")
         HttpResponse<String> resp = client.exchange(request, String)
         client.close()
@@ -47,12 +46,8 @@ class BaseService {
     }
 
     static Tuple2 getRestJsonList(GrailsApplication grailsApplication, String urlPath, Map args) {
-
+        setServiceTarget(grailsApplication)
         InputCleaner inputCleaner = new InputCleaner()
-
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
 
         Integer offset = (args['offset'] ?: 0) as Integer
         Integer size = (args['max'] ?: 10) as Integer
@@ -77,9 +72,7 @@ class BaseService {
     }
 
     static Long getRestCount(GrailsApplication grailsApplication, String urlPath) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+        setServiceTarget(grailsApplication)
 
         HttpRequest request = HttpRequest.GET("${urlPath}/count")
         HttpResponse<String> resp = client.exchange(request, String)
@@ -89,9 +82,7 @@ class BaseService {
     }
 
     static void deleteRestObject(GrailsApplication grailsApplication, String urlPath, Serializable id) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+        setServiceTarget(grailsApplication)
 
         HttpRequest request = HttpRequest.DELETE("${urlPath}/${id}")
         HttpResponse<String> resp = client.exchange(request, String)
@@ -104,9 +95,7 @@ class BaseService {
     }
 
     static HttpResponse<String> saveRestObject(GrailsApplication grailsApplication, String urlPath, GroovyObject object) {
-        def queryUrl = grailsApplication.config.bonsaiws.baseurl
-
-        BlockingHttpClient client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
+        setServiceTarget(grailsApplication)
 
         Class objClass = object.getClass()
         String className = objClass.getName()

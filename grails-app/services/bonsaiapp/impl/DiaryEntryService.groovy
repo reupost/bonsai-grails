@@ -17,13 +17,6 @@ class DiaryEntryService extends BaseService implements IDiaryEntryService {
     static String REST_URL_ROOT = "diaryEntry"
 
     def grailsApplication
-    String queryUrl
-    BlockingHttpClient client
-
-    private setServiceTarget() {
-        queryUrl = grailsApplication.config.bonsaiws.baseurl
-        client = HttpClient.create((queryUrl as String).toURL()).toBlocking()
-    }
 
     @Override
     DiaryEntry get(Serializable id) {
