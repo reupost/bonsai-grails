@@ -47,12 +47,11 @@ class BaseService {
 
     static Tuple2 getRestJsonList(GrailsApplication grailsApplication, String urlPath, Map args) {
         setServiceTarget(grailsApplication)
-        InputCleaner inputCleaner = new InputCleaner()
 
         Integer offset = (args['offset'] ?: 0) as Integer
         Integer size = (args['max'] ?: 10) as Integer
 
-        def filter = inputCleaner.getOnlyLettersAndNumbers((args['searchFilter'] ?: "").toString())
+        def filter = InputCleaner.getOnlyLettersAndNumbers((args['searchFilter'] ?: "").toString())
         filter = URLEncoder.encode(filter, "UTF-8")
         def page = Math.floor(offset/size).toInteger()
 
