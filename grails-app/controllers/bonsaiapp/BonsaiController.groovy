@@ -7,9 +7,9 @@ import static org.springframework.http.HttpStatus.*
 
 class BonsaiController {
 
-    IBonsaiService bonsaiService
-    ITaxonService taxonService
-    IUserService userService
+    BonsaiService bonsaiService
+    TaxonService taxonService
+    UserService userService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

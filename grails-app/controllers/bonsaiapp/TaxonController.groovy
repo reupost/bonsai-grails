@@ -6,7 +6,7 @@ import static org.springframework.http.HttpStatus.*
 
 class TaxonController {
 
-    ITaxonService taxonService
+    TaxonService taxonService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

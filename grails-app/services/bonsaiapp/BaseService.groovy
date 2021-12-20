@@ -1,4 +1,4 @@
-package bonsaiapp.impl
+package bonsaiapp
 
 import bonsaiapp.Copy
 import bonsaiapp.InputCleaner

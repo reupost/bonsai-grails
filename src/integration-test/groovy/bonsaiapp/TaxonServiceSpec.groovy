@@ -9,7 +9,7 @@ import org.hibernate.SessionFactory
 @Rollback
 class TaxonServiceSpec extends Specification {
 
-    ITaxonService taxonService
+    TaxonService taxonService
     SessionFactory sessionFactory
 
     private Long setupData() {

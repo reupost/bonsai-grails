@@ -1,7 +1,6 @@
 package bonsaiapp
 
 import bonsaiapp.dto.PicDTO
-import bonsaiapp.impl.BaseService
 import com.fasterxml.jackson.core.type.TypeReference
 import grails.converters.JSON
 import io.micronaut.http.HttpRequest
@@ -11,13 +10,12 @@ import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.multipart.MultipartBody
 
-class PicService extends BaseService implements IPicService {
+class PicService extends BaseService {
 
     static String REST_URL_ROOT = "pic"
 
     def grailsApplication
 
-    @Override
     Pic get(Serializable id) {
         String json = getRestJsonObject(grailsApplication, REST_URL_ROOT, id)
         JsonToObject.fromJson(json, new TypeReference<Pic>(){})
@@ -63,17 +61,14 @@ class PicService extends BaseService implements IPicService {
         resultPage
     }
 
-    @Override
     Long count() {
         getRestCount(grailsApplication, REST_URL_ROOT)
     }
 
-    @Override
     void delete(Serializable id) {
         deleteRestObject(grailsApplication, REST_URL_ROOT, id)
     }
 
-    @Override
     Pic save(Pic pic) {
         HttpResponse<String> resp = saveRestObject(grailsApplication, REST_URL_ROOT, pic)
 

@@ -5,7 +5,7 @@ import static org.springframework.http.HttpStatus.*
 
 class UserController {
 
-    IUserService userService
+    UserService userService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

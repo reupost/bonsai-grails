@@ -74,7 +74,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-amplify
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-amplify', version: '1.12.85'
-
+    //compile 'org.grails.plugins:spring-security-core:4.0.3'
 
     testCompile "io.micronaut:micronaut-inject-groovy"
     testCompile "org.grails:grails-gorm-testing-support"

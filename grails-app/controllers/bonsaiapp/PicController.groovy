@@ -9,7 +9,7 @@ import static org.springframework.http.HttpStatus.*
 
 class PicController {
 
-    IPicService picService
+    PicService picService
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 

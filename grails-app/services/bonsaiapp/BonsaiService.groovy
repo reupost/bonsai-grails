@@ -1,25 +1,19 @@
-package bonsaiapp.impl
+package bonsaiapp
 
-import bonsaiapp.Bonsai
-import bonsaiapp.Copy
-import bonsaiapp.IBonsaiService
-import bonsaiapp.ITaxonService
-import bonsaiapp.JsonToObject
-import bonsaiapp.ResultPage
+
 import bonsaiapp.dto.BonsaiDTO
 import com.fasterxml.jackson.core.type.TypeReference
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 
-class BonsaiService extends BaseService implements IBonsaiService {
+class BonsaiService extends BaseService {
 
     static String REST_URL_ROOT = "bonsai"
 
     def grailsApplication
 
-    def ITaxonService taxonService
+    def TaxonService taxonService
 
-    @Override
     Bonsai get(Serializable id) {
         String json = getRestJsonObject(grailsApplication, REST_URL_ROOT, id)
         JsonToObject.fromJson(json, new TypeReference<Bonsai>(){})
@@ -38,17 +32,14 @@ class BonsaiService extends BaseService implements IBonsaiService {
         resultPage
     }
 
-    @Override
     Long count() {
         getRestCount(grailsApplication, REST_URL_ROOT)
     }
 
-    @Override
     void delete(Serializable id) {
         deleteRestObject(grailsApplication, REST_URL_ROOT, id)
     }
 
-    @Override
     Bonsai save(Bonsai bonsai) {
         HttpResponse<String> resp = saveRestObject(grailsApplication, REST_URL_ROOT, bonsai)
 

@@ -9,7 +9,7 @@ import org.hibernate.SessionFactory
 @Rollback
 class IPicServiceSpec extends Specification {
 
-    IPicService picService
+    PicService picService
     SessionFactory sessionFactory
 
     private Long setupData() {
